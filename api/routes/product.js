@@ -37,11 +37,11 @@ router.post ('/', (req,res,next)=>{
    
  
     let product = new ProductModel({
-        _id: new Mongoose.Types.ObjectId(),
+        _id: mongoose.Types.ObjectId(),  
         name:req.body.name,
         price:req.body.price
 
-    });
+    })
     product
     .save() 
     .then(result =>{
@@ -49,7 +49,7 @@ router.post ('/', (req,res,next)=>{
         res.status(201).json({
             message: 'ADDED' ,
             product: product
-    });
+    })
 })
 
     .catch(err => {console.log(err)
@@ -101,7 +101,7 @@ router.post ('/', (req,res,next)=>{
 
     router.patch('/:productId',(req,res,next)=>{
      const id=req.params.productId.toString();
-    //  ProductModel.findByIdAndUpdate(id,req.body,{ new :true},(err,result)=>{
+
         ProductModel.findByIdAndUpdate(id,req.body,{new :true})
 
         .exec()
@@ -117,19 +117,10 @@ router.post ('/', (req,res,next)=>{
                 error:err
             })
         })
-    //      if(err){
-    //          res.send('update error')
-    //      }
-    //      else{
-    //          res.send({
-    //              name:result.name,
-    //              price:result.price
-    //          })
-    //      }
+    //     
      })
        
-    // })
-    
+ 
  
     router.delete('/:productId',(req,res,next)=>{
         const id = req.params.productId;

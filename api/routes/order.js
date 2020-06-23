@@ -1,33 +1,107 @@
 const express = require('express');
 const router = express.Router();
+const OrderModel=require('../models/orderModel');
+const ProductModel=require('../models/productModel');
 
 
 router.get('/',(req ,res,next)=>{
-res. status(200).json({
-    message:'Order is fetch'
+    OrderModel.find()
+    .select('product quality _id')
+    .exec()
+    .then(data=>{
+        res.status(200).json({
+            count:data.length,
+            orders:data.map(data=>{
+                return{
+                    _id:data._id,
+                    product:data.product,
+                    quatity :data.quality,
+                    request:{
+                        types: 'Get',
+                        url :'localhost:3000/order' +data
+                    }
+                }
+            })
+        })
+    })
+    .catch(err=>{
+        res.send(500),json({
+            error:err
+        })
+    })
+
 });
-});
+
 router.post('/',(req,res,next)=>{
-    const order={
-        orderId: req.body.orderId,
-        price : req.body.price
-    }
-    res.status(201).json({
-        message:'Order post',
-        order: order
+    ProductModel.findById(req.body.productId)
+    .then(product=>{
+        if(!product){
+             res.status(404).json({
+                message: 'Product not found'
+            });
+        }
+        let order=new OrderModel({
+   
+            product:req.body.productId, 
+           quality : req.body.quality
+           
+       
+       })
+        return order
+       .save();
+
+     
+
+    })
+    .then(data=>{
+        res.status(201).json({
+            message: 'it has been stored'
+
+        })
+    })
+    .catch(err=>{
+        res.status(500).json({
+           message: 'No product found',
+            error:err
+        });
     });
+  
+
+
+   
 });
 
 router.get('/:orderId',(req,res,next)=>{
-    res.status(200).jsaon({
-        message:'Order recieved',
-        orderId: req.params.orderId
-    });
+    OrderModel.findById(req.params.orderId)
+    
+    .exec()
+    .then(data=>{
+        res.status(200).json({
+            message:'Order recieved',
+            order:data,
+            
+            
+                    request:{
+                        types: 'Get',
+                        url :'localhost:3000/order' +data
+                    }
+                
+     
+            
+        });
+    })
+    .catch()
+  
 });
+
  router.delete('/:orderId',(req,res,next)=>{
-res.status(200).json({
-    message:'Order Deleted',
-    orderId:req.params.orderId
+     OrderModel.findByIdAndDelete(req.params.orderId)
+     .then(data=>{
+        res.status(200).json({
+            message:'Order Deleted',
+            orderId: data
+     })
+
 });
  });
 
