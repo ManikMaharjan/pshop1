@@ -2,11 +2,13 @@ const express = require('express');
 const router = express.Router();
 const OrderModel=require('../models/orderModel');
 const ProductModel=require('../models/productModel');
+const { populate } = require('../models/orderModel');
 
 
 router.get('/',(req ,res,next)=>{
     OrderModel.find()
     .select('product quality _id')
+    .populate('product')
     .exec()
     .then(data=>{
         res.status(200).json({
@@ -96,7 +98,13 @@ router.get('/:orderId',(req,res,next)=>{
 
  router.delete('/:orderId',(req,res,next)=>{
      OrderModel.findByIdAndDelete(req.params.orderId)
+     .populate('product')
      .then(data=>{
+         if (!data){
+             return res.status(404).json({
+                 message:'order not found'
+             })
+         }
         res.status(200).json({
             message:'Order Deleted',
             orderId: data

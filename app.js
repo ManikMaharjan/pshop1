@@ -13,6 +13,7 @@ app.all('*', function(req, res, next) {
  });
 const productRoutes = require('./api/routes/product')
 const orderRoutes=require('./api/routes/order');
+const userRoutes = require('./api/routes/user');
 mongoose.connect('mongodb://127.0.0.1:27017/shop',{
     useUnifiedTopology: true,
     useNewUrlParser:true,
@@ -32,6 +33,7 @@ app.use(bodyParser.json());
 //// routes handling/////
 app.use('/product',productRoutes);
 app.use('/order',orderRoutes);
+app.use('/user',userRoutes);
 
 ///// eror handling///////////////
 
